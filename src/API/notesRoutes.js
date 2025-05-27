@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const notes = await genericServices.getAllRecords("notes");
+        const notes = await genericServices.getAllRecords("notes ");
         res.status(200).json(notes);
     } catch (error) {
         res.status(500).json({ error: error.message });

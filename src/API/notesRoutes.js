@@ -44,7 +44,7 @@ router.put("/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const notes = req.body;
-        const updatedNote = await genericServices.updateRecord("notes", "note_id", id, note);
+        const updatedNote = await genericServices.updateRecord("notes", "note_id", id, notes);
         res.status(200).json(updatedNote);
     } catch (error) {
         res.status(500).json({ error: error.message });

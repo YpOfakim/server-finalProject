@@ -1,4 +1,4 @@
-const db=require("../dataBase/db.js")
+const db=require("../DB/sqlActions/db")
 
 async function getAllRecords(tableName) {
     const [rows] = await db.query(`SELECT * FROM ??`, [tableName]);

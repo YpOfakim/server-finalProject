@@ -78,9 +78,9 @@ await conDB.promise().query(insertDaily_segments);
 
  const insertPrayers= `
     INSERT INTO prayers  (prayer_name,pdf_url,start_page,end_page) VALUES
-    ('Shacharit', '/Prayers_Files/sidur.pdf', 1, 187),
-    ('Mincha', '/Prayers_Files/sidur.pdf', 187, 224),
-    ('Maariv', '/Prayers_Files/sidur.pdf', 224, 262)
+    ('Shacharit', '/Prayers_Files/Sidur.pdf', 1, 187),
+    ('Mincha', '/Prayers_Files/Sidur.pdf', 187, 224),
+    ('Maariv', '/Prayers_Files/Sidur.pdf', 224, 262)
     `;
     await conDB.promise().query(insertPrayers);
   }

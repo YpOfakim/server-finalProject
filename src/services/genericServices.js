@@ -31,4 +31,5 @@ async function getRecordsByColumn(tableName, columnName, value) {
     const [rows] = await db.query(`SELECT * FROM ?? WHERE ?? = ?`, [tableName, columnName, value]);
     return rows;
 }
+
 module.exports = {getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn};

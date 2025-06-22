@@ -16,6 +16,7 @@ app.use("/users", require("./src/API/usersRoutes"));
 app.use("/notes", require("./src/API/notesRoutes"));
 app.use("/daily_segments", require("./src/API/daily_segmentsRoutes"));
 app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes"));
+app.use("/prayers", require("./src/API/prayersRoutes"));
 
 app.get("", (req, res) => {
     return res.status(200).json("Final Project Server");

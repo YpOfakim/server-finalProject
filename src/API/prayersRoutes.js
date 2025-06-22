@@ -38,6 +38,9 @@ router.get("/text/:name", async (req, res) => {
     const dataBuffer = fs.readFileSync(pdfPath);
     const pdfData = await pdfParse(dataBuffer);
 
+    // הדפסת כל הטקסט שנשלף מה-PDF לקונסול השרת
+    console.log("Full PDF text:", pdfData.text);
+
     // חלוקה לטקסט לפי עמודים - בפורמט של pdf-parse העמודים מופרדים בדרך כלל ב '\f' (Form Feed)
     const allPages = pdfData.text.split('\f');
 

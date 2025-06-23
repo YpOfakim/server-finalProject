@@ -3,8 +3,15 @@ const genericServices = require("../Services/genericServices");
 const fs = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
-const db = require("../DB/sqlActions/db");  // הסתמך על הקוד שלך למסד
+const db = require("../DB/sqlActions/db");  
+const Tesseract = require('tesseract.js');
+const { exec } = require("child_process");
+// require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // בדיקת טעינת המשתנים הסביבתיים
 
+
+const popplerPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
+const pdfPath = path.join(__dirname, "..", "Prayers_And_Segments_Files", "Sidur.pdf");
+const imagesDir = path.resolve(__dirname, "..", "Prayers_And_Segments_Files", "tempPictures");
 
 const router = express.Router();
 
@@ -17,11 +24,81 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/text/:name", async (req, res) => {
+// router.get("/text/:name", async (req, res) => {
+//   const prayerName = req.params.name;
+
+//   try {
+//     const [rows] = await db.query(
+//       `SELECT * FROM prayers WHERE prayer_name = ?`,
+//       [prayerName]
+//     );
+
+//     if (rows.length === 0) {
+//       return res.status(404).send("תפילה לא נמצאה");
+//     }
+
+//     const prayer = rows[0];
+//     const start = prayer.start_page;
+//     const end = prayer.end_page;
+
+//     const pdfPath = path.join(__dirname, "Prayers_And_Segments_Files", "Sidur.pdf");
+//     const outputDir = path.join(__dirname, "Prayers_And_Segments_Files", "tempPictures");
+
+//     if (!fs.existsSync(outputDir)) {
+//       fs.mkdirSync(outputDir);
+//       console.log("יצרתי את תיקיית tempPictures");
+//     }
+
+//     const outputPrefix = path.join(outputDir, "page");
+//     const pdftoppmPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
+
+//     // יצירת קבצי PNG מהעמודים הרצויים
+//     const command = `${pdftoppmPath} -f ${start} -l ${end} -png "${pdfPath}" "${outputPrefix}"`;
+
+//     exec(command, async (error, stdout, stderr) => {
+//       if (error) {
+//         console.error("שגיאה בהרצת pdftoppm:", error);
+//         return res.status(500).send("שגיאה בהמרת PDF לתמונה");
+//       }
+
+//       try {
+//         let finalText = "";
+
+// for (let page = start; page <= end; page++) {
+//   // מייצרים מחרוזת עם מוביל אפסים תואם לשמות הקבצים
+//   const pageNumberStr = page.toString().padStart(3, '0'); // למשל: 11 -> "011"
+  
+//   // נתיב לתמונה בשם מתאים
+//   const imagePath = `${outputPrefix}-${pageNumberStr}.png`;
+
+//   if (!fs.existsSync(imagePath)) {
+//     return res.status(500).send(`לא נמצאה תמונה לעמוד ${page}`);
+//   }
+
+//   const result = await Tesseract.recognize(imagePath, "heb", {
+//     logger: m => console.log(m),
+//   });
+
+//   finalText += result.data.text + "\n\n";
+// }
+//         res.send(finalText);
+//       } catch (err) {
+//         console.error("שגיאה בהרצת OCR:", err);
+//         res.status(500).send("שגיאה בקריאת הטקסט עם OCR");
+//       }
+//     });
+//   } catch (err) {
+//     console.error("שגיאה בבקשה:", err);
+//     res.status(500).send("שגיאה כללית");
+//   }
+// });
+
+router.use("/image", express.static(imagesDir));
+
+router.get("/images/:name", async (req, res) => {
   const prayerName = req.params.name;
 
   try {
-    // שליפת פרטי התפילה מהמסד לפי השם
     const [rows] = await db.query(
       `SELECT * FROM prayers WHERE prayer_name = ?`,
       [prayerName]
@@ -32,30 +109,48 @@ router.get("/text/:name", async (req, res) => {
     }
 
     const prayer = rows[0];
+    const start = prayer.start_page;
+    const end = prayer.end_page;
 
-    // קריאה לקובץ ה-PDF שנמצא בשרת
-    const pdfPath = path.join(__dirname, "..", "Prayers_And_Segments_Files", "Sidur.pdf");
-    const dataBuffer = fs.readFileSync(pdfPath);
-    const pdfData = await pdfParse(dataBuffer);
+    if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
 
-    // הדפסת כל הטקסט שנשלף מה-PDF לקונסול השרת
-    console.log("Full PDF text:", pdfData.text);
+    const missingPages = [];
+    for (let i = start; i <= end; i++) {
+      const pageStr = i.toString().padStart(3, "0");
+      const imagePath = path.join(imagesDir, `page-${pageStr}.png`);
+      if (!fs.existsSync(imagePath)) {
+        missingPages.push(i);
+      }
+    }
 
-    // חלוקה לטקסט לפי עמודים - בפורמט של pdf-parse העמודים מופרדים בדרך כלל ב '\f' (Form Feed)
-    const allPages = pdfData.text.split('\f');
+    // אם חסרים קבצים – נייצר אותם
+    if (missingPages.length > 0) {
+      const minPage = Math.min(...missingPages);
+      const maxPage = Math.max(...missingPages);
+      const outputPrefix = path.join(imagesDir, "page");
 
-    // חיתוך הטקסט לפי עמודי ההתחלה והסיום מתוך מסד הנתונים
-    const selectedPages = allPages.slice(prayer.start_page - 1, prayer.end_page);
+      const command = `${popplerPath} -f ${minPage} -l ${maxPage} -png "${pdfPath}" "${outputPrefix}"`;
+      console.log("מריץ:", command);
 
-    // איחוד העמודים לבלוק טקסט אחד
-    const text = selectedPages.join('\n\n');
+      await new Promise((resolve, reject) => {
+        exec(command, (error) => {
+          if (error) return reject(error);
+          resolve();
+        });
+      });
+    }
 
-    // החזרת הטקסט ללקוח
-    res.send(text);
+    // מחזיר את הנתיבים של התמונות
+    const imageURLs = [];
+    for (let i = start; i <= end; i++) {
+      const pageStr = i.toString().padStart(3, "0");
+      imageURLs.push(`/prayers/image/page-${pageStr}.png`);
+    }
 
+    res.json(imageURLs);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("שגיאה בקריאת התפילה");
+    console.error("שגיאה:", err);
+    res.status(500).send("שגיאה בשרת");
   }
 });
 

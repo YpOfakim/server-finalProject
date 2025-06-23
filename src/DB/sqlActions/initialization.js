@@ -51,8 +51,32 @@ INSERT INTO users (user_id, user_name, user_userName, email, phone) VALUES
 const insertDaily_segments = `
 INSERT INTO daily_segments (segment_date, segment_pdf_url, start_page, end_page) VALUES
 ('2024-05-28', '/Prayers_And_Segments_Files/Aavti.pdf', 6, 7),
-('2024-05-29', '/Prayers_And_Segments_Files/Aavti.pdf', 8, 9),
-('2024-05-30', '/Prayers_And_Segments_Files/Aavti.pdf', 10, 11)
+('2024-05-29', '/Prayers_And_Segments_Files/Aavti.pdf', 7, 8),
+('2024-05-30', '/Prayers_And_Segments_Files/Aavti.pdf', 8, 9),
+('2024-05-31', '/Prayers_And_Segments_Files/Aavti.pdf', 9, 10),
+('2024-06-01', '/Prayers_And_Segments_Files/Aavti.pdf', 10, 11),
+('2024-06-02', '/Prayers_And_Segments_Files/Aavti.pdf', 11, 12),
+('2024-06-03', '/Prayers_And_Segments_Files/Aavti.pdf', 12, 13),
+('2024-06-04', '/Prayers_And_Segments_Files/Aavti.pdf', 13, 14),
+('2024-06-05', '/Prayers_And_Segments_Files/Aavti.pdf', 14, 15),
+('2024-06-06', '/Prayers_And_Segments_Files/Aavti.pdf', 15, 16),
+('2024-06-07', '/Prayers_And_Segments_Files/Aavti.pdf', 16, 17),
+('2024-06-08', '/Prayers_And_Segments_Files/Aavti.pdf', 17, 18),
+('2024-06-09', '/Prayers_And_Segments_Files/Aavti.pdf', 18, 19),
+('2024-06-10', '/Prayers_And_Segments_Files/Aavti.pdf', 19, 20),
+('2024-06-11', '/Prayers_And_Segments_Files/Aavti.pdf', 20, 21),
+('2024-06-12', '/Prayers_And_Segments_Files/Aavti.pdf', 21, 22),
+('2024-06-13', '/Prayers_And_Segments_Files/Aavti.pdf', 22, 23),
+('2024-06-14', '/Prayers_And_Segments_Files/Aavti.pdf', 23, 24),
+('2024-06-15', '/Prayers_And_Segments_Files/Aavti.pdf', 24, 25),
+('2024-06-16', '/Prayers_And_Segments_Files/Aavti.pdf', 25, 26),
+('2024-06-17', '/Prayers_And_Segments_Files/Aavti.pdf', 26, 27),
+('2024-06-18', '/Prayers_And_Segments_Files/Aavti.pdf', 27, 28),
+('2024-06-19', '/Prayers_And_Segments_Files/Aavti.pdf', 28, 29),
+('2024-06-20', '/Prayers_And_Segments_Files/Aavti.pdf', 29, 30),
+('2024-06-21', '/Prayers_And_Segments_Files/Aavti.pdf', 30, 31),
+('2024-06-22', '/Prayers_And_Segments_Files/Aavti.pdf', 31, 32),
+('2024-06-23', '/Prayers_And_Segments_Files/Aavti.pdf', 32, 33)
 `;
 await conDB.promise().query(insertDaily_segments);
 

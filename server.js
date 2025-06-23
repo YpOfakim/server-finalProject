@@ -12,11 +12,13 @@ app.use(cors());
 
 app.use(express.json()); // מאפשר שליחת JSON בבקשות
 app.use("/users", require("./src/API/usersRoutes"));
-// app.use("/minyans", require("./src/API/postsRoutes"));
 app.use("/notes", require("./src/API/notesRoutes"));
-app.use("/daily_segments", require("./src/API/daily_segmentsRoutes"));
-app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes"));
 app.use("/prayers", require("./src/API/prayersRoutes"));
+app.use("/daily", require("./src/API/dailyPageRoutes"));
+app.use("/daily_segments", require("./src/API/daily_segmentsRoutes"));
+// app.use("/passwords", require("./src/API/passwordsRoutes"));
+// app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes"));
+
 
 app.get("", (req, res) => {
     return res.status(200).json("Final Project Server");
@@ -27,3 +29,12 @@ app.get("", (req, res) => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
   
+//   const fs = require("fs");
+// const path = require("path");
+
+// const imagesDir = path.resolve(__dirname, "src", "Prayers_And_Segments_Files", "tempPictures");
+
+// fs.readdir(imagesDir, (err, files) => {
+//   if (err) return console.error("שגיאה בקריאת התיקייה:", err);
+//   console.log("קבצים בתיקיית התמונות:", files);
+// });

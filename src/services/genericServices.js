@@ -14,9 +14,17 @@ async function getRecordById(tableName, columnName, id) {
 }
 
 async function createRecord(tableName, record) {
-    const [result] = await db.query(`INSERT INTO ?? SET ?`, [tableName, record]);
-    return { id: result.insertId, ...record };
+  const [result] = await db.query(`INSERT INTO ?? SET ?`, [tableName, record]);
+  // החזרת השדה המתאים לפי הטבלה
+  if (tableName === 'users') {
+    return { user_id: result.insertId, ...record };
+  }
+  if (tableName === 'passwords') {
+    return { user_id: record.user_id, ...record };
+  }
+  return { id: result.insertId, ...record };
 }
+
 
 async function deleteRecord(tableName, columnName, id) {
     await db.query(`DELETE FROM ?? WHERE ?? = ?`, [tableName, columnName, id]);

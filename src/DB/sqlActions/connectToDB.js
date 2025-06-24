@@ -18,7 +18,7 @@ var connection = mysql.createConnection({
   user: "root",
   password: "ofakim",
   database:"ahavtiServer",
-  port: process.env.PORT_MYSQL || 3001
+  port: process.env.PORT_MYSQL || 3306
   });
   connection.connect(function (err) {
     if (err) throw err;

@@ -34,22 +34,24 @@ router.post("/", async (req, res) => {
       user_name: user.name,
       user_userName: user.userName,
       email: user.email,
-  
       phone: user.phone
-    };
-    const dbUserPassword = {
-        password: user.password
     };
 
     // יצירת משתמש חדש במסד נתונים
     const newUser = await genericServices.createRecord("users", dbUser);
-    const password = await genericServices.createRecord("passwords", dbUserPassword);
+    const userId = newUser.insertId || newUser.id || newUser.user_id; // בדוק מה מחזיר createRecord
+
+    const dbUserPassword = {
+      user_id: userId,
+      password: user.password
+    };
+    await genericServices.createRecord("passwords", dbUserPassword);
 
     console.log("newUser from DB:", newUser);
 
     // יצירת טוקן JWT
     const token = jwt.sign(
-      { userId: newUser.insertId || newUser.user_id },
+      { userId: user.user_id },
       SECRET_KEY,
       { expiresIn: "2h" }
     );
@@ -57,7 +59,7 @@ router.post("/", async (req, res) => {
     res.status(200).json({
       token,
       user: {
-        id: newUser.insertId || newUser.user_id,
+   
         name: dbUser.user_name,
         userName: dbUser.user_userName,
         email: dbUser.email,

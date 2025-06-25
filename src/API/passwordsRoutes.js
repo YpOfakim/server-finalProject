@@ -8,6 +8,7 @@ router.get("/", async (req, res) => {
     try {
         const passwords = await genericServices.getAllRecords("passwords");
         res.status(200).json(passwords);
+        console.log("Retrieved all passwords:", passwords);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -23,15 +24,15 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
-    try {
-        const password = req.body;
-        const newPasswords = await genericServices.createRecord("passwords", password);
-        res.status(201).json(newPasswords);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// router.post("/", async (req, res) => {
+//     try {
+//         const password = req.body;
+//         const newPasswords = await genericServices.createRecord("passwords", password);
+//         res.status(201).json(newPasswords);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
 
 router.delete("/:id", async (req, res) => {
     try {

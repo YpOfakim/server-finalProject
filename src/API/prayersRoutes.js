@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
 const db = require("../DB/sqlActions/db");  
-const Tesseract = require('tesseract.js');
+// const Tesseract = require('tesseract.js');
 const { exec } = require("child_process");
 // require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // בדיקת טעינת המשתנים הסביבתיים
 

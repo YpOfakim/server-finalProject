@@ -1,5 +1,7 @@
 const express = require("express");
 const genericServices = require("../Services/genericServices");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.JWT_SECRET || "Yoanna@Neomi%FinalProjectSecretKey";
 
 const router = express.Router();
 
@@ -23,13 +25,51 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    try {
-        const user = req.body;
-        const newUsers = await genericServices.createRecord("users", user);
-        res.status(201).json(newUsers);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const user = req.body;
+    console.log("user from body:", user);
+
+    // מיפוי שמות השדות לשמות העמודות במסד הנתונים
+    const dbUser = {
+      user_name: user.name,
+      user_userName: user.userName,
+      email: user.email,
+      phone: user.phone
+    };
+
+    // יצירת משתמש חדש במסד נתונים
+    const newUser = await genericServices.createRecord("users", dbUser);
+    const userId = newUser.insertId || newUser.id || newUser.user_id; // בדוק מה מחזיר createRecord
+
+    const dbUserPassword = {
+      user_id: userId,
+      password: user.password
+    };
+    await genericServices.createRecord("passwords", dbUserPassword);
+
+    console.log("newUser from DB:", newUser);
+
+    // יצירת טוקן JWT
+    const token = jwt.sign(
+      { userId: user.user_id },
+      SECRET_KEY,
+      { expiresIn: "2h" }
+    );
+
+    res.status(200).json({
+      token,
+      user: {
+   
+        name: dbUser.user_name,
+        userName: dbUser.user_userName,
+        email: dbUser.email,
+        phone: dbUser.phone
+      }
+    });
+  } catch (error) {
+    console.error("Error in POST /users:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.delete("/:id", async (req, res) => {

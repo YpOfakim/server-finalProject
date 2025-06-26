@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS notes
 CREATE TABLE notes (
     note_id INT NOT NULL,
     user_id INT NOT NULL,

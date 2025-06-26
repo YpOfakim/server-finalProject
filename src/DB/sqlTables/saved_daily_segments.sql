@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS saved_daily_segments
 CREATE TABLE saved_daily_segments (
     user_id INT NOT NULL,
     daily_segments_id INT NOT NULL,

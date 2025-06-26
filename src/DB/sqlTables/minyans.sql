@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS minyans
 CREATE TABLE minyans (
     minyan_id INT AUTO_INCREMENT NOT NULL,
     time_and_date DATETIME NOT NULL ,

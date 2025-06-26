@@ -27,6 +27,7 @@ app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes")
 app.use("/prayers", require("./src/API/prayersRoutes"));
 app.use("/geocode", require("./src/API/geocodeRoutes"));
 app.use("/passwords", require("./src/API/passwordsRoutes"));
+app.use("/prayersInMinyan", require("./src/API/prayersInMinyanRoutes"));
 
 app.get("/", (req, res) => {
   res.status(200).json("Final Project Server");

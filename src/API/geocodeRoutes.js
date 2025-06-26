@@ -40,5 +40,22 @@ router.get('/distance', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch distance' });
   }
 });
+// GET /geocode/directions?origin=...&destination=...&mode=driving
+router.get('/directions', async (req, res) => {
+  const { origin, destination, mode = 'driving' } = req.query;
+  if (!origin || !destination)
+    return res.status(400).json({ error: 'Missing origin or destination' });
+
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=${mode}&key=${GOOGLE_API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Directions fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch directions' });
+  }
+});
 
 module.exports = router;

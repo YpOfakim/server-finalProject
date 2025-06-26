@@ -51,7 +51,7 @@ console.log("Password:", password);
     res.json({
       token,
       user: {
-        id: newUser.id,
+        id: newUser.user_id,
         name,
         userName,
         email,

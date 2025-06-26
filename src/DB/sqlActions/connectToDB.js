@@ -16,7 +16,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // ב
 var connection = mysql.createConnection({
   host:"localhost",
   user: "root",
-  password: "ofakim",
+  password: "Ofakim123",
   database:"ahavtiServer",
   port: process.env.PORT_MYSQL || 3306
   });

@@ -6,9 +6,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // ב
     "../sqlTables/minyans.sql",
     "../sqlTables/daily_segments.sql",
     "../sqlTables/saved_daily_segments.sql",
- 
     "../sqlTables/notes.sql",
- 
     "../sqlTables/passwords.sql",
     "../sqlTables/prayers.sql"
    

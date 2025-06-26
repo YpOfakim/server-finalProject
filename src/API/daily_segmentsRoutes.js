@@ -12,6 +12,27 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get('/daily/daily-page', async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) {
+    return res.status(400).send('Missing date');
+  }
+
+  const segment = await getSegmentByDate(date); // פונקציה שמביאה את הנתיב ל־PDF והעמודים לפי התאריך
+
+  if (!segment) {
+    return res.status(404).send('Segment not found');
+  }
+
+  const { segment_pdf_url, start_page, end_page } = segment;
+
+  const imageBuffer = await convertPdfPageToImage(segment_pdf_url, start_page); // לדוגמה
+
+  res.contentType('image/png');
+  res.send(imageBuffer);
+});
+
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;

@@ -52,5 +52,30 @@ async function getOrCreateTodaySegment() {
     throw err;
   }
 }
+async function getAllSegments() {
+  try {
+    console.log("🔍 מבצע שליפת כל החיזוקים מה־ DB");
+    const [rows] = await db.query(
+      `SELECT * FROM daily_segments ORDER BY segment_date DESC`
+    );
+     console.log("✅ חיזוקים שנשלפו:", rows)
+    return rows;
+  } catch (err) {
+    console.error("שגיאה בשליפת כל החיזוקים:", err);
+    throw err;
+  }
+}
+async function getSegmentByDate(dateStr) {
+  const [rows] = await db.query(
+    "SELECT * FROM daily_segments WHERE segment_date = ?",
+    [dateStr]
+  );
+  return rows[0] || null;
+}
 
-module.exports = { getOrCreateTodaySegment };
+module.exports = {
+  getOrCreateTodaySegment,
+  getAllSegments,
+  getSegmentByDate
+};
+

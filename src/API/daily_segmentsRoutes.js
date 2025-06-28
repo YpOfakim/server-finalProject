@@ -1,7 +1,9 @@
 const express = require("express");
 const genericServices = require("../Services/genericServices");
+const { getAllSegments } = require('./utils/dailySegmentManager');
 
 const router = express.Router();
+console.log("📦 daily_segmentsRoutes loaded");
 
 router.get("/", async (req, res) => {
     try {
@@ -31,6 +33,17 @@ router.get('/daily/daily-page', async (req, res) => {
 
   res.contentType('image/png');
   res.send(imageBuffer);
+});
+
+router.get('/all-daily-pages', async (req, res) => {
+ console.log("📥 נכנסו לנתיב all-daily-pages");
+  try {
+    const allSegments = await getAllSegments(); // פונקציה שמביאה את כל השורות מהטבלה
+    res.json(allSegments);
+  } catch (error) {
+    console.error('שגיאה בשליפת החיזוקים:', error);
+    res.status(500).send('שגיאה בשרת');
+  }
 });
 
 router.get("/:id", async (req, res) => {

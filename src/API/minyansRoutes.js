@@ -5,6 +5,7 @@ const genericServices = require("../Services/genericServices");
 const router = express.Router();
 
 const GOOGLE_API_KEY = 'AIzaSyCVdsExOdchWIspVTLcCOgScugWBmgBllw';
+const { verifyToken } = require("../Middleware/authMiddleware");
 
 // Helper to get coordinates from address
 async function geocodeAddress(address) {
@@ -21,7 +22,7 @@ async function geocodeAddress(address) {
 
 // GET all minyans
 
-router.get("/", async (req, res) => {
+router.get("/",verifyToken, async (req, res) => {
   try {
     let { time_from } = req.query;
 
@@ -43,7 +44,7 @@ router.get("/", async (req, res) => {
 
 
 // GET single minyan by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id",verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const minyan = await genericServices.getRecordById("minyans", "minyan_id", id);
@@ -54,7 +55,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST create new minyan
-router.post("/", async (req, res) => {
+router.post("/",verifyToken, async (req, res) => {
   try {
     const { time, location, address, opener_phone, is_daily } = req.body;
 
@@ -89,25 +90,25 @@ router.post("/", async (req, res) => {
 });
 
 // PUT update minyan
-router.put("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const updatedMinyan = await genericServices.updateRecord("minyans", "minyan_id", id, req.body);
-    res.status(200).json(updatedMinyan);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// router.put("/:id",verifyToken, async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const updatedMinyan = await genericServices.updateRecord("minyans", "minyan_id", id, req.body);
+//     res.status(200).json(updatedMinyan);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
-// DELETE minyan
-router.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await genericServices.deleteRecord("minyans", "minyan_id", id);
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// // DELETE minyan
+// router.delete("/:id",verifyToken, async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     await genericServices.deleteRecord("minyans", "minyan_id", id);
+//     res.status(204).send();
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 module.exports = router;

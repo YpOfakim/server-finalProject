@@ -30,9 +30,18 @@ async function deleteRecord(tableName, columnName, id) {
 }
 
 async function updateRecord(tableName, columnName, id, record) {
-    await db.query(`UPDATE ?? SET ? WHERE ?? = ?`, [tableName, record, columnName, id]);
-    return { id, ...record };
+  // ניפוי שדות שלא קיימים בטבלה או שלא צריכים להישלח
+  const { id: _, user_id: __, ...cleanedRecord } = record;
+
+  await db.query(`UPDATE ?? SET ? WHERE ?? = ?`, [
+    tableName,
+    cleanedRecord,
+    columnName,
+    id,
+  ]);
+  return { [columnName]: id, ...cleanedRecord };
 }
+
 
 async function getRecordsByColumn(tableName, columnName, value) {
     const [rows] = await db.query(`SELECT * FROM ?? WHERE ?? = ?`, [tableName, columnName, value]);
@@ -51,7 +60,20 @@ async function getRecordsByColumn(tableName, columnName, value) {
   const [rows] = await db.query(query, [tableName, orderByColumn]);
   return rows;
 }
-
+async function getRecordsByColumns(tableName, columns) {
+    const keys = Object.keys(columns);
+    const values = Object.values(columns);
+    const whereClause = keys.map(key => `?? = ?`).join(' AND ');
+    const params = [];
+    keys.forEach((key, i) => {
+        params.push(key, values[i]);
+    });
+    const [rows] = await db.query(
+        `SELECT * FROM ?? WHERE ${whereClause}`,
+        [tableName, ...params]
+    );
+    return rows;
+}
 // async function getRecordsOrderedByDistance(tableName, lat, lng, time_from = null) {
 //   let query = `
 //     SELECT *, ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) AS distance_meters
@@ -71,4 +93,4 @@ async function getRecordsByColumn(tableName, columnName, value) {
 // }
 
 
-module.exports = {getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
+module.exports = {getAllRecords,getRecordById,createRecord,getRecordsByColumns,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};

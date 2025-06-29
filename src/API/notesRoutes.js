@@ -1,8 +1,8 @@
 const express = require("express");
 const genericServices = require("../Services/genericServices");
 const router = express.Router();
-
-router.get("/", async (req, res) => {
+const { verifyToken } = require("../Middleware/authMiddleware");
+router.get("/",verifyToken, async (req, res) => {
     try {
         const notes = await genericServices.getAllRecords("notes ");
         res.status(200).json(notes);
@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:id",verifyToken, async (req, res) => {
     try {
         const id = req.params.id;
         const note = await genericServices.getRecordById("notes", "note_id", id);
@@ -20,7 +20,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
+router.post("/",verifyToken, async (req, res) => {
     try {
         const note = req.body;
         const newNotes = await genericServices.createRecord("notes", note);
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",verifyToken, async (req, res) => {
     try {
         const id = req.params.id;
         await genericServices.deleteRecord("notes", "note_id", id);
@@ -40,7 +40,7 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id",verifyToken, async (req, res) => {
     try {
         const id = req.params.id;
         const notes = req.body;

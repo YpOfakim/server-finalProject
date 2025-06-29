@@ -64,14 +64,4 @@ async function getRecordsByConditions(tableName, conditions) {
   return rows;
 }
 
-async function getRecordsByField(table, fieldName, value) {
-  const [rows] = await conDB.promise().query(
-    `SELECT * FROM ?? WHERE ?? = ?`,
-    [table, fieldName, value]
-  );
-  return rows;
-}
-
-
-
-module.exports = {getRecordsByConditions,getRecordsByField,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
+module.exports = {getRecordsByConditions,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};

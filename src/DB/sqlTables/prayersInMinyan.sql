@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS prayersInMinyan
+-- DROP TABLE IF EXISTS prayersInMinyan
 CREATE TABLE prayersInMinyan (
     prayerInMinyan_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

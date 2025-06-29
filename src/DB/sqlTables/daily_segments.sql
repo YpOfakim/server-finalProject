@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS daily_segments
+-- DROP TABLE IF EXISTS daily_segments
 CREATE TABLE daily_segments (
     daily_segments_id INT AUTO_INCREMENT NOT NULL,
     segment_date DATE NOT NULL,

@@ -5,24 +5,23 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // ב
     "../sqlTables/users.sql",
     "../sqlTables/minyans.sql",
     "../sqlTables/daily_segments.sql",
-    "../sqlTables/saved_daily_segments.sql",
     "../sqlTables/notes.sql",
     "../sqlTables/passwords.sql",
     "../sqlTables/prayers.sql"
    
 
-    // הכנסת נתונים התחלתיים לטבלת users
+    // // הכנסת נתונים התחלתיים לטבלת users
     async function initializeDB() {
-    // Clear existing data from all tables
-    await conDB.promise().query("DELETE FROM prayers");
-    await conDB.promise().query("DELETE FROM passwords");
-    await conDB.promise().query("DELETE FROM notes");
-    await conDB.promise().query("DELETE FROM saved_daily_segments");
-    await conDB.promise().query("DELETE FROM daily_segments");
-    await conDB.promise().query("DELETE FROM minyans");
-    await conDB.promise().query("DELETE FROM users")
-    // Reset AUTO_INCREMENT for users table
-    await conDB.promise().query("ALTER TABLE users AUTO_INCREMENT = 1");
+    // // Clear existing data from all tables
+    // await conDB.promise().query("DELETE FROM prayers");
+    // await conDB.promise().query("DELETE FROM passwords");
+    // await conDB.promise().query("DELETE FROM notes");
+    // // await conDB.promise().query("DELETE FROM saved_daily_segments");
+    // await conDB.promise().query("DELETE FROM daily_segments");
+    // await conDB.promise().query("DELETE FROM minyans");
+    // await conDB.promise().query("DELETE FROM users")
+    // // Reset AUTO_INCREMENT for users table
+    // await conDB.promise().query("ALTER TABLE users AUTO_INCREMENT = 1");
 
 
 
@@ -34,7 +33,7 @@ INSERT INTO users (user_id, user_name, user_userName, email, phone) VALUES
 (4, 'Patricia Lebsack', 'Karianne', 'Julianne.OConner@kory.org', '0556723799'),
 (5, 'Chelsey Dietrich', 'Kamren', 'Lucio_Hettinger@annie.ca', '0554386546')
 `;
-    await conDB.promise().query(insertUsers);
+    // await conDB.promise().query(insertUsers);
     // console.log("Initial users inserted"); 
     const insertPasswords = `
     INSERT INTO passwords (user_id,password ) VALUES
@@ -44,7 +43,7 @@ INSERT INTO users (user_id, user_name, user_userName, email, phone) VALUES
     (4, 'Patricia Lebsack'),
     (5, 'Chelsey Dietrich')
     `;
-    await conDB.promise().query(insertPasswords);
+    // await conDB.promise().query(insertPasswords);
 
 const insertDaily_segments = `
 INSERT INTO daily_segments (segment_date, segment_pdf_url, start_page, end_page) VALUES
@@ -74,38 +73,56 @@ INSERT INTO daily_segments (segment_date, segment_pdf_url, start_page, end_page)
 ('2025-06-20', '/Prayers_And_Segments_Files/Aavti.pdf', 29, 30),
 ('2025-06-21', '/Prayers_And_Segments_Files/Aavti.pdf', 30, 31),
 ('2025-06-22', '/Prayers_And_Segments_Files/Aavti.pdf', 31, 32),
-('2025-06-23', '/Prayers_And_Segments_Files/Aavti.pdf', 32, 33)
-`;
-await conDB.promise().query(insertDaily_segments);
+('2025-06-23', '/Prayers_And_Segments_Files/Aavti.pdf', 32, 33),
+('2025-06-24', '/Prayers_And_Segments_Files/Aavti.pdf', 33, 34),
+('2025-06-25', '/Prayers_And_Segments_Files/Aavti.pdf', 34, 35),
+('2025-06-26', '/Prayers_And_Segments_Files/Aavti.pdf', 35, 36),
+('2025-06-27', '/Prayers_And_Segments_Files/Aavti.pdf', 36, 37),
+('2025-06-28', '/Prayers_And_Segments_Files/Aavti.pdf', 37, 38)
+// `;
+// await conDB.promise().query(insertDaily_segments);
 
     const insertMinyans= `
     INSERT INTO minyans  (minyan_id,time_and_date  ,longitude,latitude,opener_phone, is_daily) VALUES
    
     `;
-    // await conDB.promise().query(insertMinyans);
-
-
-
+  
     const insertNotes = `
-    INSERT INTO notes  (note_id,user_id, body) VALUES
-    (1,  1,"et iusto sed quo iure\nvoluptatem ")
+    INSERT INTO notes  (user_id, body, note_date, note_title) VALUES
+    (1, "התפילה מנתבת את דרכה לקדוש ברוך הוא כמו ששופכים מים על מדרכה עם אבנים משתלבות.
+    ברגע ששופכים אותם הם הולכים ומתפצלים לכל הכיוונים, וגם אם אני לא מקבלת את מה שביקשתי , התפילה הולכת לדברים אחרים שצריך בחיים.
+    תחשבי על אדם שמבקש ומתפלל על זיווג ומרגיש שהוא לא נענה... בינתיים התפילות שלו הולכות על ילדים, פרנסה וכו', כי צריך עוד דברים בחיים חוץ מזיווג והוא יקבל את האחת שלו כשיגיע הזמן.",
+    '2025-05-29',"התפילה היא כמו מים"),
+    (1, "התפילה מנתבת את דרכה לקדוש ברוך הוא כמו ששופכים מים על מדרכה עם אבנים משתלבות.
+    ברגע ששופכים אותם הם הולכים ומתפצלים לכל הכיוונים, וגם אם אני לא מקבלת את מה שביקשתי , התפילה הולכת לדברים אחרים שצריך בחיים.
+    תחשבי על אדם שמבקש ומתפלל על זיווג ומרגיש שהוא לא נענה... בינתיים התפילות שלו הולכות על ילדים, פרנסה וכו', כי צריך עוד דברים בחיים חוץ מזיווג והוא יקבל את האחת שלו כשיגיע הזמן.",
+    '2025-06-01',"התפילה היא כמו מים"),
+    (1, "התפילה מנתבת את דרכה לקדוש ברוך הוא כמו ששופכים מים על מדרכה עם אבנים משתלבות.
+    ברגע ששופכים אותם הם הולכים ומתפצלים לכל הכיוונים, וגם אם אני לא מקבלת את מה שביקשתי , התפילה הולכת לדברים אחרים שצריך בחיים.
+    תחשבי על אדם שמבקש ומתפלל על זיווג ומרגיש שהוא לא נענה... בינתיים התפילות שלו הולכות על ילדים, פרנסה וכו', כי צריך עוד דברים בחיים חוץ מזיווג והוא יקבל את האחת שלו כשיגיע הזמן.",
+    '2025-06-15',"התפילה היא כמו מים"),
+    (1, "התפילה מנתבת את דרכה לקדוש ברוך הוא כמו ששופכים מים על מדרכה עם אבנים משתלבות.
+    ברגע ששופכים אותם הם הולכים ומתפצלים לכל הכיוונים, וגם אם אני לא מקבלת את מה שביקשתי , התפילה הולכת לדברים אחרים שצריך בחיים.
+    תחשבי על אדם שמבקש ומתפלל על זיווג ומרגיש שהוא לא נענה... בינתיים התפילות שלו הולכות על ילדים, פרנסה וכו', כי צריך עוד דברים בחיים חוץ מזיווג והוא יקבל את האחת שלו כשיגיע הזמן.",
+    '2025-06-17',"התפילה היא כמו מים"),
+    (1, "התפילה מנתבת את דרכה לקדוש ברוך הוא כמו ששופכים מים על מדרכה עם אבנים משתלבות.
+    ברגע ששופכים אותם הם הולכים ומתפצלים לכל הכיוונים, וגם אם אני לא מקבלת את מה שביקשתי , התפילה הולכת לדברים אחרים שצריך בחיים.
+    תחשבי על אדם שמבקש ומתפלל על זיווג
+     ומרגיש שהוא לא נענה... בינתיים התפילות שלו הולכות על ילדים, פרנסה וכו', כי צריך עוד דברים בחיים חוץ מזיווג והוא יקבל את האחת שלו כשיגיע הזמן.",
+    '2025-06-23',"התפילה היא כמו מים")
      `;
-    // await conDB.promise().query(insertNotes);
+    await conDB.promise().query(insertNotes);
 
 
-    const insertSaved_daily_segments= `
-    INSERT INTO saved_daily_segments  (user_id,daily_segments_id) VALUES
-    `;
-    // await conDB.promise().query(insertSaved_daily_segments);
  const insertPrayers= `
     INSERT INTO prayers  (prayer_name,prayers_pdf_url,start_page,end_page) VALUES
     ('Shacharit', '/Prayers_Files/Sidur.pdf', 11, 187),
     ('Mincha', '/Prayers_Files/Sidur.pdf', 187, 224),
     ('Maariv', '/Prayers_Files/Sidur.pdf', 224, 262)
     `;
-    await conDB.promise().query(insertPrayers);
-  }
-
+    // await conDB.promise().query(insertPrayers);
+  
+}
 
   initializeDB();
   module.exports = initializeDB;

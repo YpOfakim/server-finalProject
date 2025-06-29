@@ -23,7 +23,6 @@ app.use("/prayers", require("./src/API/prayersRoutes"));
 app.use("/daily_segments", require("./src/API/daily_segmentsRoutes"));
 app.use('/daily', require('./src/API/dailyPageRoutes')); 
 app.use('/', require('./src/API/dailyPageRoutes')); 
-app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes"));
 app.use("/prayers", require("./src/API/prayersRoutes"));
 app.use("/geocode", require("./src/API/geocodeRoutes"));
 app.use("/passwords", require("./src/API/passwordsRoutes"));

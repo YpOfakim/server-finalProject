@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS prayers
+-- DROP TABLE IF EXISTS prayers
 CREATE TABLE prayers (
     prayer_id INT AUTO_INCREMENT PRIMARY KEY,
     prayer_name VARCHAR(50) NOT NULL,

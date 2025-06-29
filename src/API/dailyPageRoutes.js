@@ -8,7 +8,7 @@ const { getSegmentByDate } = require("./utils/dailySegmentManager");
 
 const PDF_PATH = path.resolve(__dirname, "..", "Prayers_And_Segments_Files", "Aavti.pdf");
 const OUTPUT_DIR = path.resolve(__dirname, "..", "Prayers_And_Segments_Files", "DailyPages");
-const pdftoppmPath = `C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe`;
+const pdftoppmPath = `"K:\\React\\npm\\FinelProject\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
 
 // מייצרת את התמונה מה-PDF
 function generatePageImage(pageNumber, callback) {

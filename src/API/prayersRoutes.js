@@ -9,7 +9,7 @@ const { exec } = require("child_process");
 // require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // בדיקת טעינת המשתנים הסביבתיים
 
 // const popplerPath = `"K:\\React\\npm\\FinelProject\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
-const popplerPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin"`;
+const popplerPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
 const pdfPath = path.join(__dirname, "..", "Prayers_And_Segments_Files", "Sidur.pdf");
 const imagesDir = path.resolve(__dirname, "..", "Prayers_And_Segments_Files", "tempPictures");
 

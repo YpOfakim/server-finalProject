@@ -2,6 +2,7 @@ const express = require("express");
 const genericServices = require("../Services/genericServices");
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET || "Yoanna@Neomi%FinalProjectSecretKey";
+const { verifyToken } = require("../Middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -82,15 +83,20 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        const user = req.body;
-        const updatedUser = await genericServices.updateRecord("users", "user_id", id, user);
-        res.status(200).json(updatedUser);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.put("/:id",verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = req.body;
+    console.log("Updating user ID:", id);
+    console.log("Data received:", user);
+
+    const updatedUser = await genericServices.updateRecord("users", "user_id", id, user);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Update error:", error);  // <=== זה הכי חשוב
+    res.status(500).json({ error: error.message });
+  }
 });
+
 
 module.exports = router;

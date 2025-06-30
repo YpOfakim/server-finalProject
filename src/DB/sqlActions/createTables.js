@@ -17,10 +17,11 @@ async function createTables() {
     // "../sqlTables/minyans.sql",
     // "../sqlTables/daily_segments.sql",
     // "../sqlTables/saved_daily_segments.sql",
-    "../sqlTables/notes.sql",
+    // "../sqlTables/notes.sql",
     // "../sqlTables/passwords.sql",
     // "../sqlTables/prayers.sql"  ,
-    //  "../sqlTables/prayersInMinyan.sql"
+     "../sqlTables/prayersInMinyan.sql"
+   
   ];
 
   for (const file of tableFiles) {

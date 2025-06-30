@@ -30,9 +30,18 @@ async function deleteRecord(tableName, columnName, id) {
 }
 
 async function updateRecord(tableName, columnName, id, record) {
-    await db.query(`UPDATE ?? SET ? WHERE ?? = ?`, [tableName, record, columnName, id]);
-    return { id, ...record };
+  // ניפוי שדות שלא קיימים בטבלה או שלא צריכים להישלח
+  const { id: _, user_id: __, ...cleanedRecord } = record;
+
+  await db.query(`UPDATE ?? SET ? WHERE ?? = ?`, [
+    tableName,
+    cleanedRecord,
+    columnName,
+    id,
+  ]);
+  return { [columnName]: id, ...cleanedRecord };
 }
+
 
 async function getRecordsByColumn(tableName, columnName, value) {
     const [rows] = await db.query(`SELECT * FROM ?? WHERE ?? = ?`, [tableName, columnName, value]);
@@ -64,4 +73,18 @@ async function getRecordsByConditions(tableName, conditions) {
   return rows;
 }
 
+<<<<<<< HEAD
+async function getRecordsByField(table, fieldName, value) {
+  const [rows] = await conDB.promise().query(
+    `SELECT * FROM ?? WHERE ?? = ?`,
+    [table, fieldName, value]
+  );
+  return rows;
+}
+
+
+
+module.exports = {getRecordsByConditions,getRecordsByField,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
+=======
 module.exports = {getRecordsByConditions,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
+>>>>>>> 64e91e7f05976e09ff98cbbca7c228ad8ff349d8

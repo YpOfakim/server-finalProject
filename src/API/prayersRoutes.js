@@ -8,8 +8,8 @@ const db = require("../DB/sqlActions/db");
 const { exec } = require("child_process");
 // require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // בדיקת טעינת המשתנים הסביבתיים
 
-
-const popplerPath = `"K:\\React\\npm\\FinelProject\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
+// const popplerPath = `"K:\\React\\npm\\FinelProject\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
+const popplerPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin"`;
 const pdfPath = path.join(__dirname, "..", "Prayers_And_Segments_Files", "Sidur.pdf");
 const imagesDir = path.resolve(__dirname, "..", "Prayers_And_Segments_Files", "tempPictures");
 
@@ -23,75 +23,6 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-// router.get("/text/:name", async (req, res) => {
-//   const prayerName = req.params.name;
-
-//   try {
-//     const [rows] = await db.query(
-//       `SELECT * FROM prayers WHERE prayer_name = ?`,
-//       [prayerName]
-//     );
-
-//     if (rows.length === 0) {
-//       return res.status(404).send("תפילה לא נמצאה");
-//     }
-
-//     const prayer = rows[0];
-//     const start = prayer.start_page;
-//     const end = prayer.end_page;
-
-//     const pdfPath = path.join(__dirname, "Prayers_And_Segments_Files", "Sidur.pdf");
-//     const outputDir = path.join(__dirname, "Prayers_And_Segments_Files", "tempPictures");
-
-//     if (!fs.existsSync(outputDir)) {
-//       fs.mkdirSync(outputDir);
-//       console.log("יצרתי את תיקיית tempPictures");
-//     }
-
-//     const outputPrefix = path.join(outputDir, "page");
-//     const pdftoppmPath = `"C:\\Users\\neomi\\source\\repos\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
-
-//     // יצירת קבצי PNG מהעמודים הרצויים
-//     const command = `${pdftoppmPath} -f ${start} -l ${end} -png "${pdfPath}" "${outputPrefix}"`;
-
-//     exec(command, async (error, stdout, stderr) => {
-//       if (error) {
-//         console.error("שגיאה בהרצת pdftoppm:", error);
-//         return res.status(500).send("שגיאה בהמרת PDF לתמונה");
-//       }
-
-//       try {
-//         let finalText = "";
-
-// for (let page = start; page <= end; page++) {
-//   // מייצרים מחרוזת עם מוביל אפסים תואם לשמות הקבצים
-//   const pageNumberStr = page.toString().padStart(3, '0'); // למשל: 11 -> "011"
-  
-//   // נתיב לתמונה בשם מתאים
-//   const imagePath = `${outputPrefix}-${pageNumberStr}.png`;
-
-//   if (!fs.existsSync(imagePath)) {
-//     return res.status(500).send(`לא נמצאה תמונה לעמוד ${page}`);
-//   }
-
-//   const result = await Tesseract.recognize(imagePath, "heb", {
-//     logger: m => console.log(m),
-//   });
-
-//   finalText += result.data.text + "\n\n";
-// }
-//         res.send(finalText);
-//       } catch (err) {
-//         console.error("שגיאה בהרצת OCR:", err);
-//         res.status(500).send("שגיאה בקריאת הטקסט עם OCR");
-//       }
-//     });
-//   } catch (err) {
-//     console.error("שגיאה בבקשה:", err);
-//     res.status(500).send("שגיאה כללית");
-//   }
-// });
 
 router.use("/image", express.static(imagesDir));
 

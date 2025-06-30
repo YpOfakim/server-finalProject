@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
   router.get('/:userId', async (req, res) => {
     try {
       const userId = req.params.userId;
-      const notes = await genericServices.getRecordsByField('notes', 'user_id', userId);
+      const notes = await genericServices.getRecordsByColumn('notes', 'user_id', userId);
       res.status(200).json(notes);
     } catch (error) {
       console.error(error);

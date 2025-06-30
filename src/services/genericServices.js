@@ -46,11 +46,13 @@ async function updateRecord(tableName, columnName, id, record) {
 async function getRecordsByColumn(tableName, columnName, value) {
     const [rows] = await db.query(`SELECT * FROM ?? WHERE ?? = ?`, [tableName, columnName, value]);
     return rows;
-}async function getRecordsWithOperator(tableName, columnName, operator, value) {
+}
+async function getRecordsWithOperator(tableName, columnName, operator, value) {
   const query = `SELECT * FROM ?? WHERE ?? ${operator} ?`;
   const [rows] = await db.query(query, [tableName, columnName, value]);
   return rows;
-}async function getRecordsOrdered(tableName, orderByColumn, direction = 'ASC') {
+}
+async function getRecordsOrdered(tableName, orderByColumn, direction = 'ASC') {
   const validDirections = ['ASC', 'DESC'];
   if (!validDirections.includes(direction.toUpperCase())) {
     throw new Error('Invalid sort direction');
@@ -60,37 +62,25 @@ async function getRecordsByColumn(tableName, columnName, value) {
   const [rows] = await db.query(query, [tableName, orderByColumn]);
   return rows;
 }
-async function getRecordsByColumns(tableName, columns) {
-    const keys = Object.keys(columns);
-    const values = Object.values(columns);
-    const whereClause = keys.map(key => `?? = ?`).join(' AND ');
-    const params = [];
-    keys.forEach((key, i) => {
-        params.push(key, values[i]);
-    });
-    const [rows] = await db.query(
-        `SELECT * FROM ?? WHERE ${whereClause}`,
-        [tableName, ...params]
-    );
-    return rows;
+async function getRecordsByConditions(tableName, conditions) {
+  const keys = Object.keys(conditions);
+  const values = Object.values(conditions);
+
+  const whereClause = keys.map(key => `${key} = ?`).join(' AND ');
+  const sql = `SELECT * FROM ?? WHERE ${whereClause}`;
+
+  const [rows] = await db.query(sql, [tableName, ...values]);
+  return rows;
 }
-// async function getRecordsOrderedByDistance(tableName, lat, lng, time_from = null) {
-//   let query = `
-//     SELECT *, ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) AS distance_meters
-//     FROM ??
-//   `;
-//   const params = [lng, lat, tableName];
 
-//   if (time_from) {
-//     query += " WHERE time_and_date >= ?";
-//     params.push(time_from);
-//   }
-
-//   query += " ORDER BY distance_meters ASC";
-
-//   const [rows] = await db.query(query, params);
-//   return rows;
-// }
+async function getRecordsByField(table, fieldName, value) {
+  const [rows] = await conDB.promise().query(
+    `SELECT * FROM ?? WHERE ?? = ?`,
+    [table, fieldName, value]
+  );
+  return rows;
+}
 
 
-module.exports = {getAllRecords,getRecordById,createRecord,getRecordsByColumns,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
+
+module.exports = {getRecordsByConditions,getRecordsByField,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};

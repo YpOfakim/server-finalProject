@@ -9,7 +9,8 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: { origin: "*" },
 });
-
+require("./dailyCron"); 
+const {getOrCreateTodaySegment} = require("./src/API/utils/dailySegmentManager");
 app.use(cors());
 app.use(express.json());
 
@@ -19,9 +20,9 @@ app.use("/users", require("./src/API/usersRoutes"));
 app.use("/minyans", require("./src/API/minyansRoutes"));
 app.use("/notes", require("./src/API/notesRoutes"));
 app.use("/prayers", require("./src/API/prayersRoutes"));
-app.use("/daily", require("./src/API/dailyPageRoutes"));
 app.use("/daily_segments", require("./src/API/daily_segmentsRoutes"));
-app.use("/saved_daily_segments", require("./src/API/saved_daily_segmentsRoutes"));
+app.use('/daily', require('./src/API/dailyPageRoutes')); 
+app.use('/', require('./src/API/dailyPageRoutes')); 
 app.use("/prayers", require("./src/API/prayersRoutes"));
 app.use("/geocode", require("./src/API/geocodeRoutes"));
 app.use("/passwords", require("./src/API/passwordsRoutes"));
@@ -39,3 +40,7 @@ app.use((err, req, res, next) => {
   console.error("Unhandled Error:", err.stack);
   res.status(500).send("Something broke!");
 });
+
+
+getOrCreateTodaySegment()  .then(segment => {
+    console.log("Today's segment:", segment)})

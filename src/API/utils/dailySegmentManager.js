@@ -3,10 +3,17 @@ const db = require('../../DB/sqlActions/db');
 const path = require("path");
 
 async function getOrCreateTodaySegment() {
-  const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+  function getLocalDateOnly() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  const today = getLocalDateOnly();
 
   try {
-    // בדיקה אם יש כבר חיזוק לתאריך של היום
     const [existingRows] = await db.query(
       `SELECT * FROM daily_segments WHERE segment_date = ?`,
       [today]
@@ -16,7 +23,6 @@ async function getOrCreateTodaySegment() {
       return existingRows[0];
     }
 
-    // שליפת החיזוק האחרון לפי תאריך
     const [latestRows] = await db.query(
       `SELECT * FROM daily_segments ORDER BY segment_date DESC LIMIT 1`
     );
@@ -34,7 +40,6 @@ async function getOrCreateTodaySegment() {
       end_page: last.end_page + 1,
     };
 
-    // הוספת השורה החדשה למסד הנתונים
     await db.query(
       `INSERT INTO daily_segments (segment_date, segment_pdf_url, start_page, end_page)
        VALUES (?, ?, ?, ?)`,
@@ -53,4 +58,45 @@ async function getOrCreateTodaySegment() {
   }
 }
 
-module.exports = { getOrCreateTodaySegment };
+async function getAllSegments() {
+  try {
+    console.log("🔍 מבצע שליפת כל החיזוקים מה־DB");
+
+    const query = `
+      SELECT 
+        daily_segments_id,
+        segment_pdf_url,
+        start_page,
+        end_page,
+        DATE_FORMAT(segment_date, '%Y-%m-%d') AS segment_date
+      FROM daily_segments
+      ORDER BY segment_date DESC
+    `;
+
+    const [rows] = await db.query(query);
+    console.log("✅ חיזוקים שנשלפו:", rows);
+    return rows;
+  }
+  catch (err) {
+    console.error("❌ שגיאה בשליפת כל החיזוקים:", err);
+    throw err;
+  }
+}
+async function getSegmentByDate(dateStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new Error(`Invalid date string provided: "${dateStr}"`);
+  }
+
+  const [rows] = await db.query(
+    "SELECT * FROM daily_segments WHERE segment_date = ?",
+    [dateStr]
+  );
+  return rows[0] || null;
+}
+
+module.exports = {
+  getOrCreateTodaySegment,
+  getAllSegments,
+  getSegmentByDate
+};
+

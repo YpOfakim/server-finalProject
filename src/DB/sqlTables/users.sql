@@ -1,3 +1,4 @@
+-- DROP TABLE IF EXISTS users
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT ,
     user_name VARCHAR(20) NOT NULL CHECK (LENGTH(user_name) BETWEEN 3 AND 20),

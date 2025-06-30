@@ -3,10 +3,11 @@ var mysql = require("mysql2");
 require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }); // בדיקת טעינת המשתנים הסביבתיים
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  host:"localhost",
+  user: "root",
+  password: "Ofakim123",
+  database:"ahavtiServer",
+  port: process.env.PORT_MYSQL || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

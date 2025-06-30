@@ -62,6 +62,24 @@ async function getRecordsOrdered(tableName, orderByColumn, direction = 'ASC') {
   const [rows] = await db.query(query, [tableName, orderByColumn]);
   return rows;
 }
+
+async function getRecordsByColumns(tableName, columns) {
+    const keys = Object.keys(columns);
+    const values = Object.values(columns);
+    const whereClause = keys.map(key => `?? = ?`).join(' AND ');
+    const params = [];
+    keys.forEach((key, i) => {
+        params.push(key, values[i]);
+    });
+    const [rows] = await db.query(
+        `SELECT * FROM ?? WHERE ${whereClause}`,
+        [tableName, ...params]
+    );
+    return rows;
+}
+
+
+// async function getRecordsOrderedByDistance(tableName, lat, lng, time_from = null) {
 async function getRecordsByConditions(tableName, conditions) {
   const keys = Object.keys(conditions);
   const values = Object.values(conditions);
@@ -73,18 +91,10 @@ async function getRecordsByConditions(tableName, conditions) {
   return rows;
 }
 
-<<<<<<< HEAD
-async function getRecordsByField(table, fieldName, value) {
-  const [rows] = await conDB.promise().query(
-    `SELECT * FROM ?? WHERE ?? = ?`,
-    [table, fieldName, value]
-  );
-  return rows;
-}
 
 
 
-module.exports = {getRecordsByConditions,getRecordsByField,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
-=======
-module.exports = {getRecordsByConditions,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered};
->>>>>>> 64e91e7f05976e09ff98cbbca7c228ad8ff349d8
+
+module.exports = {getRecordsByConditions,getAllRecords,getRecordById,createRecord,deleteRecord,updateRecord,getRecordsByColumn,getRecordsWithOperator,getRecordsOrdered,getRecordsByColumns};
+
+

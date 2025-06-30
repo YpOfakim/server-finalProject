@@ -93,7 +93,7 @@ async function getSegmentByDate(dateStr) {
   );
   return rows[0] || null;
 }
-
+getOrCreateTodaySegment()
 module.exports = {
   getOrCreateTodaySegment,
   getAllSegments,

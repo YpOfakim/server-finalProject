@@ -17,9 +17,9 @@ async function createTables() {
     // "../sqlTables/minyans.sql",
     // "../sqlTables/daily_segments.sql",
     // "../sqlTables/saved_daily_segments.sql",
-    // "../sqlTables/notes.sql",
-    // "../sqlTables/passwords.sql",
-    // "../sqlTables/prayers.sql"  ,
+    "../sqlTables/notes.sql",
+    "../sqlTables/passwords.sql",
+    "../sqlTables/prayers.sql"  ,
      "../sqlTables/prayersInMinyan.sql"
    
   ];

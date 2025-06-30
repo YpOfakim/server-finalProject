@@ -4,63 +4,55 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 
 const genericServices = require("../Services/genericServices");
-const SECRET_KEY = process.env.JWT_SECRET || "SecretKey";
+const SECRET_KEY = process.env.JWT_SECRET || "Yoanna@Neomi%FinalProjectSecretKey";
 
 // 🔐 רישום משתמש חדש
 router.post("/register", async (req, res) => {
   try {
     const { user_name, user_userName, email, password, phone } = req.body;
-    console.log("user from body:", req.body);
-console.log("req.body received:", req.body);
-console.log("Password:", password);
 
-    // בדיקה אם המשתמש כבר קיים
+    if (!user_name || !user_userName || !email || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
     const existingUsers = await genericServices.getRecordsByColumn("users", "user_userName", user_userName);
-    console.log("Existing users length:", existingUsers.length);
-    
     if (existingUsers.length > 0)
-      return res.status(400).json({ message: "ser already exists" });
+      return res.status(400).json({ message: "User already exists" });
 
-    // יצירת משתמש בטבלת users
     const newUser = await genericServices.createRecord("users", {
-        user_name,
-        user_userName,
-        email,
-        phone
+      user_name,
+      user_userName,
+      email,
+      phone,
     });
-    console.log("newUser from DB:", newUser);
 
-    // הצפנת סיסמה ושמירתה בטבלת passwords
     const passwordHash = await bcrypt.hash(password, 10);
-    console.log("Password hash created:", passwordHash);
 
-    const savedPassword = await genericServices.createRecord("passwords", {
+    await genericServices.createRecord("passwords", {
       user_id: newUser.user_id,
       password: passwordHash,
     });
-    console.log("Saved password record:", savedPassword);
 
+    const token = jwt.sign(
+      { userId: newUser.user_id, userName: user_userName },
+      SECRET_KEY,
+      { expiresIn: "2h" }
+    );
 
-    // יצירת טוקן JWT
-  const token = jwt.sign(
-  { userId: newUser.user_id, userName: user_userName },
-  SECRET_KEY,
-  { expiresIn: "2h" }
-);
-
-    // אחרי יצירת הטוקן ובדיוק לפני שליחת התשובה
-    console.log(`Registration succeeded for user: ${user_userName}`);
-  res.json({
-  token,
-  user: {
-        user_id: newUser.user_id, 
+    res.json({
+      token,
+      user: {
+        user_id: newUser.user_id,
         user_name: newUser.user_name,
         user_userName: newUser.user_userName,
         email: newUser.email,
-        phone: newUser.phone
-  },
-});
-  console.log("Registration successful, token created:", token);
+        phone: newUser.phone,
+      },
+    });
   } catch (err) {
     console.error("Registration failed:", err);
     res.status(500).json({ message: "Registration failed" });
@@ -71,29 +63,35 @@ console.log("Password:", password);
 router.post("/login", async (req, res) => {
   try {
     const { userName, password } = req.body;
-    console.log(`Login attempt: ${userName} password received`);
+    console.log(`Login attempt: ${userName}`);
 
-    // שליפת המשתמש לפי user_userName
+    // בדיקת שדות ריקים
+    if (!userName || !password) {
+      return res.status(400).json({ message: "יש למלא שם משתמש וסיסמה" });
+    }
+
+    // חיפוש משתמש לפי user_userName
     const users = await genericServices.getRecordsByColumn("users", "user_userName", userName);
-    if (users.length === 0)
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (users.length === 0) {
+      return res.status(404).json({ message: "שם המשתמש לא קיים" });
+    }
 
     const user = users[0];
     console.log("User found:", user);
 
-    // שליפת סיסמה מוצפנת מהטבלה
+    // חיפוש סיסמה לפי user_id
     const passwords = await genericServices.getRecordsByColumn("passwords", "user_id", user.user_id);
-    if (passwords.length === 0)
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (passwords.length === 0) {
+      return res.status(500).json({ message: "אין סיסמה משויכת למשתמש זה" });
+    }
 
     const passwordHash = passwords[0].password;
-    console.log(`Comparing password to hash: ${password} ${passwordHash}`);
+    console.log(`Comparing password for ${userName}`);
 
-    // השוואת הסיסמה מול ההאש
+    // השוואת סיסמה
     const valid = await bcrypt.compare(password, passwordHash);
     if (!valid) {
-      console.log("Password mismatch for user:", userName);
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "סיסמה שגויה" });
     }
 
     // יצירת טוקן
@@ -103,8 +101,8 @@ router.post("/login", async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    // אחרי יצירת הטוקן ובדיוק לפני שליחת התשובה
     console.log(`Login succeeded for user: ${userName}`);
+
     res.json({
       token,
       user: {
@@ -115,10 +113,12 @@ router.post("/login", async (req, res) => {
         phone: user.phone
       },
     });
+
   } catch (err) {
     console.error("Login failed:", err);
-    res.status(500).json({ message: "Login failed" });
+    res.status(500).json({ message: "שגיאה בשרת. נסה שוב מאוחר יותר." });
   }
 });
+
 
 module.exports = router;

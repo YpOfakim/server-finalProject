@@ -57,6 +57,8 @@ router.get("/:id",verifyToken, async (req, res) => {
 // POST create new minyan
 router.post("/",verifyToken, async (req, res) => {
   try {
+    const opener_id = req.userId;
+
     const { time, location, address, opener_phone, is_daily } = req.body;
 
     let latitude = null;
@@ -78,8 +80,7 @@ router.post("/",verifyToken, async (req, res) => {
       latitude,
       longitude,
       address: address || null,
-      opener_phone,
-      is_daily,
+      opener_id
     });
 
     res.status(201).json({ message: "Minyan created successfully", minyan: newMinyan });

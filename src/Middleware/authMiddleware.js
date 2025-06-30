@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET || "Yoanna@Neomi%FinalProjectSecretKey";
 
 function verifyToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader?.replace("Bearer ", "");
-
+const authHeader = req.headers["authorization"] || req.headers["Authorization"];
+const token = authHeader?.replace("Bearer ", "");
+console.log("Auth Header:", req.headers["authorization"]);
   if (!token) {
     return res.status(403).json({ message: "No token provided" });
   }

@@ -19,7 +19,12 @@ async function createRecord(tableName, record) {
   // החזרת מזהה נכון לפי שם הטבלה
   if (tableName === 'users') {
     return { user_id: result.insertId, ...record };
+  } else if (tableName === 'minyans') {
+    return { minyan_id: result.insertId, ...record };
+  } else if (tableName === 'prayersInMinyan') {
+    return { prayersInMinyan_id: result.insertId, ...record }; // אם יש שדה כזה
   }
+
   return { id: result.insertId, ...record };
 }
 

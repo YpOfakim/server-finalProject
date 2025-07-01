@@ -1,52 +1,22 @@
+// File: routes/minyans.js
 const express = require("express");
 const genericServices = require("../Services/genericServices");
-
+const { verifyToken } = require("../Middleware/authMiddleware");
+const { geocodeAddress, reverseGeocode } = require("../API/utils/geocodeManager"); // שינוי כאן
 
 const router = express.Router();
 
-const GOOGLE_API_KEY = 'AIzaSyCVdsExOdchWIspVTLcCOgScugWBmgBllw';
-const { verifyToken } = require("../Middleware/authMiddleware");
-
-// Helper to get coordinates from address
-async function geocodeAddress(address) {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (data.status === 'OK' && data.results.length > 0) {
-    return data.results[0].geometry.location;
-  } else {
-    throw new Error("Failed to geocode address");
-  }
-}
-
-// Helper to get address from coordinates (reverse geocoding)
-async function reverseGeocode(lat, lng) {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log("Google reverse geocode response:", data); // Add this line
-  if (data.status === 'OK' && data.results.length > 0) {
-    return data.results[0].formatted_address;
-  } else {
-    throw new Error("Failed to reverse geocode coordinates");
-  }
-}
-
 // GET all minyans
-
-router.get("/",verifyToken, async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   try {
     let { time_from } = req.query;
 
     if (!time_from) {
-      time_from = new Date().toISOString(); // תאריך ושעה נוכחיים ב-ISO
+      time_from = new Date().toISOString();
     }
 
-    // סינון לפי זמן מהמניין ואילך
     let minyans = await genericServices.getRecordsWithOperator("minyans", "time_and_date", ">=", time_from);
-    
-    minyans.sort((a, b) => new Date(a.time_and_date) - new Date(b.time_and_date)); // מיון לפי זמן עולה
+    minyans.sort((a, b) => new Date(a.time_and_date) - new Date(b.time_and_date));
 
     res.status(200).json(minyans);
   } catch (error) {
@@ -54,10 +24,8 @@ router.get("/",verifyToken, async (req, res) => {
   }
 });
 
-
-
 // GET single minyan by ID
-router.get("/:id",verifyToken, async (req, res) => {
+router.get("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const minyan = await genericServices.getRecordById("minyans", "minyan_id", id);
@@ -68,11 +36,10 @@ router.get("/:id",verifyToken, async (req, res) => {
 });
 
 // POST create new minyan
-router.post("/",verifyToken, async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   try {
-     console.log("POST /minyans req.body:", req.body);
     const opener_id = req.userId;
-    const { time, location, address, opener_phone, is_daily } = req.body;
+    const { time, location, address } = req.body;
 
     let latitude = null;
     let longitude = null;
@@ -81,10 +48,8 @@ router.post("/",verifyToken, async (req, res) => {
     if (location && location.lat && location.lng) {
       latitude = location.lat;
       longitude = location.lng;
-      // If address not provided, get it from coordinates
       if (!finalAddress) {
         finalAddress = await reverseGeocode(latitude, longitude);
-        console.log("Reverse geocoded address:", finalAddress); // Add this line
       }
     } else if (address) {
       const coords = await geocodeAddress(address);
@@ -101,34 +66,18 @@ router.post("/",verifyToken, async (req, res) => {
       address: finalAddress,
       opener_id
     });
+    console.log(newMinyan);
 
-    res.status(201).json({ message: "Minyan created successfully", minyan: newMinyan });
+    await genericServices.createRecord("prayersInMinyan", {
+      minyan_id: newMinyan.minyan_id,
+      user_id: opener_id
+    });
+
+    res.status(201).json({ message: "Minyan created and user added", minyan: newMinyan });
   } catch (err) {
     console.error("Error in POST /minyans:", err);
     res.status(500).json({ error: err.message || "Internal Server Error" });
   }
 });
-
-// PUT update minyan
-// router.put("/:id",verifyToken, async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const updatedMinyan = await genericServices.updateRecord("minyans", "minyan_id", id, req.body);
-//     res.status(200).json(updatedMinyan);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// // DELETE minyan
-// router.delete("/:id",verifyToken, async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     await genericServices.deleteRecord("minyans", "minyan_id", id);
-//     res.status(204).send();
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
 
 module.exports = router;

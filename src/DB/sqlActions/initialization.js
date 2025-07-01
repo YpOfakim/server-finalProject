@@ -103,20 +103,3 @@ await conDB.promise().query(insertDaily_segments);
 
   initializeDB();
   module.exports = initializeDB;
-
-
-
-//   function getTodayDate() {
-//   const today = new Date();
-//   const yyyy = today.getFullYear();
-//   const mm = String(today.getMonth() + 1).padStart(2, '0');
-//   const dd = String(today.getDate()).padStart(2, '0');
-//   return `${yyyy}-${mm}-${dd}`;
-// }
-
-// const today = getTodayDate();
-// // לדוגמה:
-// const insertDaily_segments = `
-// INSERT INTO daily_segments (segment_date, segment_pdf_url, start_page, end_page) VALUES
-// ('${today}', '/Prayers_Files/sidur.pdf', 1, 10)
-// `;

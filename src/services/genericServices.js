@@ -30,15 +30,22 @@ async function deleteRecord(tableName, columnName, id) {
 }
 
 async function updateRecord(tableName, columnName, id, record) {
-  // ניפוי שדות שלא קיימים בטבלה או שלא צריכים להישלח
   const { id: _, user_id: __, ...cleanedRecord } = record;
 
-  await db.query(`UPDATE ?? SET ? WHERE ?? = ?`, [
-    tableName,
-    cleanedRecord,
-    columnName,
-    id,
-  ]);
+  // הפוך לאיברים של SET
+  const fields = Object.keys(cleanedRecord);
+  const values = Object.values(cleanedRecord);
+
+  if (fields.length === 0) {
+    throw new Error("אין שדות לעדכן");
+  }
+
+  const setClause = fields.map(field => `\`${field}\` = ?`).join(", ");
+
+  const sql = `UPDATE \`${tableName}\` SET ${setClause} WHERE \`${columnName}\` = ?`;
+
+  await db.query(sql, [...values, id]);
+
   return { [columnName]: id, ...cleanedRecord };
 }
 

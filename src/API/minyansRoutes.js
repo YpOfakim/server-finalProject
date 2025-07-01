@@ -20,6 +20,19 @@ async function geocodeAddress(address) {
   }
 }
 
+// Helper to get address from coordinates (reverse geocoding)
+async function reverseGeocode(lat, lng) {
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  console.log("Google reverse geocode response:", data); // Add this line
+  if (data.status === 'OK' && data.results.length > 0) {
+    return data.results[0].formatted_address;
+  } else {
+    throw new Error("Failed to reverse geocode coordinates");
+  }
+}
+
 // GET all minyans
 
 router.get("/",verifyToken, async (req, res) => {
@@ -57,16 +70,22 @@ router.get("/:id",verifyToken, async (req, res) => {
 // POST create new minyan
 router.post("/",verifyToken, async (req, res) => {
   try {
+     console.log("POST /minyans req.body:", req.body);
     const opener_id = req.userId;
-
     const { time, location, address, opener_phone, is_daily } = req.body;
 
     let latitude = null;
     let longitude = null;
+    let finalAddress = address || null;
 
     if (location && location.lat && location.lng) {
       latitude = location.lat;
       longitude = location.lng;
+      // If address not provided, get it from coordinates
+      if (!finalAddress) {
+        finalAddress = await reverseGeocode(latitude, longitude);
+        console.log("Reverse geocoded address:", finalAddress); // Add this line
+      }
     } else if (address) {
       const coords = await geocodeAddress(address);
       latitude = coords.lat;
@@ -79,7 +98,7 @@ router.post("/",verifyToken, async (req, res) => {
       time_and_date: time,
       latitude,
       longitude,
-      address: address || null,
+      address: finalAddress,
       opener_id
     });
 
